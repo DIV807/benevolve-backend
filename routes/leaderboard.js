@@ -12,6 +12,7 @@ router.get("/leaderboard", async (req, res) => {
     }
 });
 
+
 // Award points to a user
 router.post("/award-points", async (req, res) => {
     const { userId, pointsToAdd } = req.body;
