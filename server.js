@@ -13,6 +13,7 @@ const Event = require('./models/Event');
 
 const leaderboardRoutes = require("./routes/leaderboard");
 const authRoutes = require("./routes/auth");
+
 const profileRoutes = require("./routes/profiledisplay"); 
 
 
