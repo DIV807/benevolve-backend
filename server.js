@@ -32,6 +32,10 @@ app.use("/api", eventRoutes);
 
 app.use("/api", locationRoutes);
 
+app.use("/api/users", leaderboardRoutes); // Leaderboard API
+app.use("/api/auth", authRoutes); // Authentication API
+app.use("/api/profile", profileRoutes); // Register Profile API
+
 
 // 🔹 Connect to MongoDB
 const mongoURI = process.env.MONGO_URI || 'mongodb+srv://benevolve8:siyakeram@cluster0.ht3br.mongodb.net/benevolvedb?retryWrites=true&w=majority&appName=Cluster0';
@@ -158,9 +162,7 @@ app.post('/api/events/search', async (req, res) => {
 
 
 
-app.use("/api/users", leaderboardRoutes); // Leaderboard API
-app.use("/api/auth", authRoutes); // Authentication API
-app.use("/api/profile", profileRoutes); // Register Profile API
+
 
 
 
