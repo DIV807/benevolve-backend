@@ -50,15 +50,24 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
+// CORS configuration for Express
+const corsOptions = {
+    origin: true, // Allow all origins (or specify: process.env.FRONTEND_URL || '*')
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+};
+
 // Socket.io setup with CORS
 const io = new Server(server, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+        origin: true, // Allow all origins
+        methods: ["GET", "POST"],
+        credentials: true
     }
 });
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json()); 
 
 app.use("/api", eventRoutes);
