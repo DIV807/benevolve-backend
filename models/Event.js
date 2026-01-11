@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 
-const User = require('./user');  // Update path to your User model if needed
+const User = require('./User');  // Update path to your User model if needed
 
 const eventSchema = new mongoose.Schema({
     name: {
