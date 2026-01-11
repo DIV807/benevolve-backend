@@ -5,16 +5,17 @@ const Volunteer = require("../models/Volunteer");
 const NGO = require("../models/NGO");
 
 const router = express.Router();
-const SECRET_KEY = "your_secret_key"; // Use .env file in production
+const dotenv = require('dotenv');
+dotenv.config();
+const SECRET_KEY = process.env.JWT_SECRET || "your_secret_key"; 
 
-// User Login Route
 router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Validate Input
+        
         if (!email || !password) {
-            return res.status(400).json({ error: "❌ Email and password are required!" });
+            return res.status(400).json({ error: " Email and password are required!" });
         }
 
         let user = await Volunteer.findOne({ email });
@@ -26,19 +27,17 @@ router.post("/login", async (req, res) => {
         }
 
         if (!user) {
-            return res.status(404).json({ error: "❌ Email not found. Please sign up." });
+            return res.status(404).json({ error: "Email not found. Please sign up." });
         }
 
-        // Validate Password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).json({ error: "❌ Invalid password. Try again." });
+            return res.status(400).json({ error: " Invalid password. Try again." });
         }
 
-        // Generate JWT Token
-        const token = jwt.sign({ id: user._id, role }, SECRET_KEY, { expiresIn: "1h" });
+        // Generate JWT Token (expires in 7 days for better UX)
+        const token = jwt.sign({ id: user._id, role }, SECRET_KEY, { expiresIn: "7d" });
 
-        // Prepare additional data for response
         let userData;
         if (role === "volunteer") {
             userData = {
@@ -56,12 +55,12 @@ router.post("/login", async (req, res) => {
             };
         }
 
-        // Send Response (Include user details for frontend)
+        
         res.json({ 
             token, 
             userId: user._id, 
             role,
-            userData // Send full user details
+            userData 
         });
 
     } catch (error) {

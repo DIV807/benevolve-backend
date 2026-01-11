@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Aarav Sharma",
+    "email": "aarav@example.com",
+    "password": "securepass123",
+    "interests": "Python, AI, Sustainability",
+    "availability": "Weekends"
+  },
+  {
+    "name": "Sanya Mehta",
+    "email": "sanya@example.com",
+    "password": "mypassword",
+    "interests": "Teaching, Communication, Mental Health",
+    "availability": "Evenings"
+  },
+  {
+    "name": "Rohan Gupta",
+    "email": "rohan@example.com",
+    "password": "rohanpass",
+    "interests": "Teamwork, Public Speaking, Community Work",
+    "availability": "Weekdays"
+  },
+  {
+    "name": "Priya Iyer",
+    "email": "priya@example.com",
+    "password": "priyapass",
+    "interests": "Gardening, Sustainability, Environmental Awareness",
+    "availability": "Saturdays"
+  },
+  {
+    "name": "Kabir Verma",
+    "email": "kabir@example.com",
+    "password": "kabirpass",
+    "interests": "Cybersecurity, Ethical Hacking, Public Awareness",
+    "availability": "Evenings"
+  }
+]

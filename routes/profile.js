@@ -4,7 +4,6 @@ const Volunteer = require("../models/Volunteer");
 const NGO = require("../models/NGO");
 const router = express.Router();
 
-// Get user profile details
 router.get("/profile/:userId", async (req, res) => {
     const { userId } = req.params;
     let user = await Volunteer.findById(userId);

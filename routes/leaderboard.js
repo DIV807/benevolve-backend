@@ -2,7 +2,6 @@ const express = require("express");
 const User = require("../models/User");
 const router = express.Router();
 
-// Fetch top 10 volunteers
 router.get("/leaderboard", async (req, res) => {
     try {
         const topVolunteers = await User.find().sort({ points: -1 }).limit(10);
@@ -12,7 +11,6 @@ router.get("/leaderboard", async (req, res) => {
     }
 });
 
-// Award points to a user
 router.post("/award-points", async (req, res) => {
     const { userId, pointsToAdd } = req.body;
     try {
@@ -21,7 +19,6 @@ router.post("/award-points", async (req, res) => {
 
         user.points += pointsToAdd;
 
-        // Assign badges based on milestones
         if (user.points >= 100 && !user.badges.includes("Super Volunteer")) {
             user.badges.push("Super Volunteer 🏅");
         }
