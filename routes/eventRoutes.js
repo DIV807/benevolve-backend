@@ -45,7 +45,9 @@ function vectorize(text) {
 
 router.get("/events", async (req, res) => {
     try {
-        const events = await Event.find().sort({ date: 1 }); // Sort by date ascending
+        // Only return upcoming events (today or later), sorted by date ascending
+        const now = new Date();
+        const events = await Event.find({ date: { $gte: now } }).sort({ date: 1 });
         res.status(200).json(events);
     } catch (error) {
         console.error("❌ Error fetching events:", error);
@@ -59,22 +61,34 @@ router.get("/events/search", async (req, res) => {
     if (!query) return res.status(400).json({ error: 'Missing query' });
 
     try {
-        const events = await Event.find();
+        // Only search within upcoming events (today or later)
+        const now = new Date();
+        const events = await Event.find({ date: { $gte: now } });
         const tokens = query.toLowerCase().split(/\W+/).filter(Boolean);
 
-        // --- Stage 1: Filtering ---
-        let filtered = events.filter(event => {
-            const matchesLocation = tokens.some(t =>
-                event.location.toLowerCase().includes(t)
-            );
-            const matchesSkill = tokens.some(t =>
-                event.skills.some(skill => skill.toLowerCase().includes(t))
-            );
+        console.log(`🔍 Search query: "${query}" | Tokens: [${tokens.join(', ')}] | Total events: ${events.length}`);
 
-            return matchesLocation || matchesSkill; 
+        // --- Stage 1: Filtering ---
+        // Search across name, description, location, and skills
+        let filtered = events.filter(event => {
+            const searchableText = [
+                event.name,
+                event.description,
+                event.location,
+                ...event.skills
+            ].join(' ').toLowerCase();
+
+            // Check if any token matches in any field
+            return tokens.some(token => searchableText.includes(token));
         });
 
-        if (filtered.length === 0) filtered = events; 
+        console.log(`📊 Filtered events: ${filtered.length}`);
+
+        // If no matches found, return all events (let ML model rank them)
+        if (filtered.length === 0) {
+            console.log('⚠️ No matches found, returning all events for ML ranking');
+            filtered = events;
+        } 
 
         // --- Stage 2: ML Ranking (if model is loaded) ---
         if (mlModel && Object.keys(vocabIndex).length > 0) {
@@ -89,6 +103,9 @@ router.get("/events/search", async (req, res) => {
 
                 scores.sort((a, b) => b.score - a.score);
 
+                console.log(`🤖 ML Ranking: ${scores.length} events scored`);
+
+                // Return all scored results, even if score is low (let frontend decide threshold)
                 return res.json({
                     results: scores.map(s => ({
                         ...s.event.toObject(),
@@ -102,8 +119,13 @@ router.get("/events/search", async (req, res) => {
         }
 
         // Fallback to filter-only results
+        // Sort by date (upcoming first) if no ML ranking
+        const sortedFiltered = filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        console.log(`📋 Filter-only: Returning ${sortedFiltered.length} events`);
+        
         res.json({
-            results: filtered.map(event => ({
+            results: sortedFiltered.map(event => ({
                 ...event.toObject(),
                 relevance: 0.8
             })),
